@@ -117,7 +117,7 @@ airline-satisfaction-app/
 
 ## 👥 Team
 
-- Mohamed Abbas Abdul Fattah
+- Mohamed Abbas Abdul Fattah Salama
 - Mostafa Mohamed Ahmed Khedr
 - Hanin Ashraf Abdul Sattar Ali
 
