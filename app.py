@@ -106,43 +106,108 @@ def build_feature_row(raw: dict) -> pd.DataFrame:
 
 
 # =========================================================================
+# THEME STATE — Dark / Light toggle
+# =========================================================================
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
+
+def _toggle_theme():
+    st.session_state.dark_mode = not st.session_state.dark_mode
+
+DARK = st.session_state.dark_mode
+
+PALETTE = {
+    # shared accents (same in both modes — brand colors)
+    "navy_deep": "#0B1D33",
+    "navy_panel": "#12304F",
+    "amber": "#FFB300",
+    "amber_soft": "#FFD569",
+    "green": "#2FBF71",
+    "red": "#FF6B6B",
+    # mode-dependent
+    "page_bg":      "#0E1726" if DARK else "#F6F8FB",
+    "card_bg":      "#152238" if DARK else "#FFFFFF",
+    "card_border":  "#26364F" if DARK else "#E1E7F0",
+    "ink":          "#E9EEF6" if DARK else "#0B1D33",
+    "slate":        "#8FA1BC" if DARK else "#6C84A3",
+    "input_bg":     "#101B2D" if DARK else "#FFFFFF",
+    "sidebar_bg":   "#0B1424" if DARK else "#FFFFFF",
+}
+P = PALETTE
+
+# =========================================================================
 # THEME — "Departure Board" design system
 # =========================================================================
-st.markdown("""
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
-:root {
-    --navy-deep:   #0B1D33;
-    --navy-panel:  #12304F;
-    --navy-line:   #24476B;
-    --amber:       #FFB300;
-    --amber-soft:  #FFD569;
-    --ink:         #0B1D33;
-    --paper:       #F6F8FB;
-    --slate:       #6C84A3;
-    --green:       #2FBF71;
-    --red:         #FF5C5C;
-}
+:root {{
+    --navy-deep:   {P['navy_deep']};
+    --navy-panel:  {P['navy_panel']};
+    --amber:       {P['amber']};
+    --amber-soft:  {P['amber_soft']};
+    --ink:         {P['ink']};
+    --paper:       {P['page_bg']};
+    --slate:       {P['slate']};
+    --green:       {P['green']};
+    --red:         {P['red']};
+    --card-bg:     {P['card_bg']};
+    --card-border: {P['card_border']};
+}}
 
 /* ---- Global chrome cleanup ---- */
-#MainMenu, footer, header {visibility: hidden;}
-.block-container {padding-top: 1.2rem; max-width: 1100px;}
-html, body, [class*="css"] {
+#MainMenu, footer {{visibility: hidden;}}
+.block-container {{padding-top: 1.2rem; max-width: 1100px;}}
+html, body, [class*="css"] {{
     font-family: 'Inter', sans-serif;
     color: var(--ink);
-}
+}}
 
-/* ---- Hero / departure board strip ---- */
-.hero {
+/* ---- App + sidebar backgrounds follow the toggle ---- */
+[data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
+    background: var(--paper) !important;
+}}
+[data-testid="stSidebar"] {{
+    background: {P['sidebar_bg']} !important;
+    border-right: 1px solid var(--card-border);
+}}
+[data-testid="stSidebar"] * {{ color: var(--ink) !important; }}
+[data-testid="stSidebar"] .stCaption, [data-testid="stSidebar"] small {{ color: var(--slate) !important; }}
+
+/* ---- Native input/select chrome follow the toggle ---- */
+[data-baseweb="select"] > div, div[data-testid="stNumberInput"] input,
+div[data-testid="stTextInput"] input {{
+    background: {P['input_bg']} !important;
+    color: var(--ink) !important;
+    border-color: var(--card-border) !important;
+}}
+div[data-testid="stNumberInput"] button {{
+    background: {P['input_bg']} !important;
+    color: var(--ink) !important;
+}}
+[data-baseweb="popover"] li {{ color: {P['ink']} !important; }}
+
+/* ---- Force widget labels/text to follow the toggle (overrides static theme.toml textColor) ---- */
+[data-testid="stForm"] label, [data-testid="stForm"] p,
+[data-testid="stWidgetLabel"] p, [data-testid="stMarkdownContainer"] p,
+[data-testid="stSliderTickBar"] p, [data-testid="stSliderThumbValue"] p,
+[data-testid="stNumberInput"] label {{
+    color: var(--ink) !important;
+}}
+
+/* ---- Dark/Light toggle button styling lives near the Submit button rules below ---- */
+
+/* ---- Hero / departure board strip (always dark navy — brand mark) ---- */
+.hero {{
     background: linear-gradient(135deg, var(--navy-deep) 0%, #16385C 100%);
     border-radius: 14px;
     padding: 34px 38px 28px 38px;
     margin-bottom: 28px;
     box-shadow: 0 10px 30px rgba(11,29,51,0.25);
     animation: rise 0.7s cubic-bezier(.2,.8,.2,1) both;
-}
-.board-strip {
+}}
+.board-strip {{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12.5px;
     letter-spacing: 1.5px;
@@ -153,60 +218,65 @@ html, body, [class*="css"] {
     border-bottom: 1px dashed rgba(255,179,0,0.35);
     padding-bottom: 12px;
     margin-bottom: 16px;
-}
-.board-strip span.dot {
+}}
+.board-strip span.dot {{
     display: inline-block;
     width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--green);
     margin-right: 6px;
     box-shadow: 0 0 6px var(--green);
-}
-.hero h1 {
+}}
+.hero h1 {{
     font-family: 'Space Grotesk', sans-serif;
     color: white;
     font-size: 30px;
     font-weight: 700;
     margin: 0 0 6px 0;
     letter-spacing: -0.3px;
-}
-.hero p {
+}}
+.hero p {{
     color: #A9C1DE;
     font-size: 15px;
     margin: 0;
     max-width: 640px;
     line-height: 1.55;
-}
+}}
 
-@keyframes rise {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes rise {{
+    from {{ opacity: 0; transform: translateY(14px); }}
+    to   {{ opacity: 1; transform: translateY(0); }}
+}}
 
 /* ---- Section labels ---- */
-.section-label {
+.section-label {{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     letter-spacing: 1px;
     color: var(--slate);
     margin: 26px 0 6px 0;
     padding-bottom: 6px;
-    border-bottom: 1px solid #E1E7F0;
-}
+    border-bottom: 1px solid var(--card-border);
+}}
 
 /* ---- Panel card wrapping the form ---- */
-div[data-testid="stForm"] {
-    background: white;
-    border: 1px solid #E1E7F0;
+div[data-testid="stForm"] {{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 26px 28px 14px 28px;
     box-shadow: 0 2px 10px rgba(11,29,51,0.04);
-}
+}}
 
 /* ---- Sliders use theme primaryColor (see .streamlit/config.toml) ---- */
 
 /* ---- Submit button ---- */
-.stButton>button, button[kind="primaryFormSubmit"], button[kind="formSubmit"] {
+/* ---- Predict button (form submit) — real kind is secondaryFormSubmit in this Streamlit version ---- */
+div[data-testid="stFormSubmitButton"] button,
+div[data-testid="stFormSubmitButton"] button:hover,
+div[data-testid="stFormSubmitButton"] button:focus,
+div[data-testid="stFormSubmitButton"] button:active,
+div[data-testid="stFormSubmitButton"] button:focus:not(:active) {{
     background: var(--amber) !important;
     color: var(--navy-deep) !important;
     font-weight: 700 !important;
@@ -214,30 +284,43 @@ div[data-testid="stForm"] {
     border-radius: 8px !important;
     padding: 0.6rem 1rem !important;
     letter-spacing: 0.3px;
+    box-shadow: none !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.stButton>button:hover, button[kind="primaryFormSubmit"]:hover {
+}}
+div[data-testid="stFormSubmitButton"] button:hover {{
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(255,179,0,0.35);
-}
+    box-shadow: 0 6px 16px rgba(255,179,0,0.35) !important;
+}}
 
-/* ---- Boarding pass result card ---- */
-.pass-wrap {
+/* ---- Sidebar theme-toggle button: neutral outline, not amber ---- */
+div[data-testid="stSidebar"] .theme-toggle button,
+div[data-testid="stSidebar"] .theme-toggle button:hover,
+div[data-testid="stSidebar"] .theme-toggle button:focus {{
+    background: transparent !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--ink) !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}}
+
+/* ---- Boarding pass result card (always dark — matches hero) ---- */
+.pass-wrap {{
     display: flex;
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 12px 28px rgba(11,29,51,0.14);
     animation: rise 0.5s ease both;
     margin-top: 6px;
-}
-.pass-main {
+}}
+.pass-main {{
     flex: 3;
     background: var(--navy-deep);
     padding: 26px 30px;
     color: white;
     position: relative;
-}
-.pass-stub {
+}}
+.pass-stub {{
     flex: 1;
     background: var(--navy-panel);
     padding: 26px 20px;
@@ -249,48 +332,48 @@ div[data-testid="stForm"] {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-.pass-stub b { color: white; display: block; font-size: 13.5px; }
-.status-line {
+}}
+.pass-stub b {{ color: white; display: block; font-size: 13.5px; }}
+.status-line {{
     font-family: 'Space Grotesk', sans-serif;
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 4px;
-}
-.status-satisfied { color: var(--green); }
-.status-dissatisfied { color: var(--red); }
-.conf-number {
+}}
+.status-satisfied {{ color: var(--green); }}
+.status-dissatisfied {{ color: var(--red); }}
+.conf-number {{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 44px;
     font-weight: 600;
     color: var(--amber);
     letter-spacing: 1px;
-}
-.conf-label {
+}}
+.conf-label {{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     letter-spacing: 1.5px;
     color: #8FA3BF;
-}
+}}
 
 /* ---- Sidebar stat rows ---- */
-.stat-row {
+.stat-row {{
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 13.5px;
     padding: 5px 0;
-    border-bottom: 1px solid #EEF2F7;
-}
-.stat-row span { color: var(--slate); }
-.stat-row b {
+    border-bottom: 1px solid var(--card-border);
+}}
+.stat-row span {{ color: var(--slate) !important; }}
+.stat-row b {{
     font-family: 'IBM Plex Mono', monospace;
-    color: var(--navy-deep);
-}
+    color: var(--ink) !important;
+}}
 
-@media (prefers-reduced-motion: reduce) {
-    .hero, .pass-wrap { animation: none !important; }
-}
+@media (prefers-reduced-motion: reduce) {{
+    .hero, .pass-wrap {{ animation: none !important; }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -314,6 +397,14 @@ st.markdown(f"""
 # SIDEBAR
 # =========================================================================
 with st.sidebar:
+    st.markdown('<div class="theme-toggle">', unsafe_allow_html=True)
+    st.button(
+        "☀️  Light mode" if DARK else "🌙  Dark mode",
+        on_click=_toggle_theme,
+        use_container_width=True,
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.divider()
     st.markdown("### ✈️ About this model")
     st.markdown(
         "A tuned **XGBoost** classifier trained on 129,880 airline passenger "
@@ -465,3 +556,4 @@ st.markdown(
     "Model: tuned XGBoost pipeline · Built with Streamlit</div>",
     unsafe_allow_html=True,
 )
+
