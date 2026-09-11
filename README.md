@@ -117,9 +117,9 @@ airline-satisfaction-app/
 
 ## 👥 Team
 
+- Mohamed Abbas Abdul Fattah
 - Mostafa Mohamed Ahmed Khedr
 - Hanin Ashraf Abdul Sattar Ali
-- Mohamed Abbas Abdul Fattah
 
 *NTI Summer Training — Final Project*
 
