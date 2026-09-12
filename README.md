@@ -82,10 +82,9 @@ This project analyzes airline customer satisfaction data and builds a binary cla
 
 ## 🖼️ Screenshots
 
-<!-- Add your app screenshots below. Example:
-![Prediction Form](screenshots/form.png)
-![Prediction Result](screenshots/result.png)
--->
+![Light Mode](screenshots/light-mode.png)
+![Boarding Pass Result](screenshots/result.png)
+![Dark Mode](screenshots/dark-mode.png)
 
 ---
 
@@ -117,9 +116,9 @@ airline-satisfaction-app/
 
 ## 👥 Team
 
-- Mohamed Abbas Abdul Fattah Salama
 - Mostafa Mohamed Ahmed Khedr
 - Hanin Ashraf Abdul Sattar Ali
+- Mohamed Abbas Abdul Fattah
 
 *NTI Summer Training — Final Project*
 
